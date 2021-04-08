@@ -3,7 +3,7 @@ A lightweight, simple and crazy-idea server capable of executing workflows made 
 
 ## What/who is Freddie?
 
-Freddie is a lightweight, simple and crazy-idea server capable of executing workflows created with KNIME Analytics Platform. It is designed to be minimalist, simple to use and free (as in free beer!) to anyone who does not have a few tens of thousand dollars for a real thing.
+Freddie is a lightweight, simple and crazy-idea server capable of executing workflows created with KNIME Analytics Platform. It is designed to be minimalist, simple to use and free (as in free beer!) to anyone who does not have a few tens of thousand dollars for a real thing (the real thing being the [original KNIME server](https://www.knime.com/knime-server)).
 
 ## What can it do?
 
@@ -15,9 +15,9 @@ The short list of features is as follows:
 * fast execution of workflows by maintaining a pool of already running instances of KNIME platform
 * executing a workflow on a specific version of KNIME platform by creating an execution environments
 
-## Is Freddie a replacement for the [original KNIME server](https://www.knime.com/knime-server)?
+## Is Freddie a replacement for the original KNIME Server?
 
-Absolutely not! It was never meant to be one. The original KNIME server (henceforth known as the ‘[KNIME Server](https://www.knime.com/knime-server)’) has many more features and is more integrated into KNIME than Freddie. Besides, Freddie runs workflows as a batch job and KNIME Server uses additional plugins. Freddie is a separate product from the analytics platform and should be used as such. 
+Absolutely not! It was never meant to be one. The original KNIME server (henceforth known as the ‘KNIME Server’) has many more features and is more integrated into KNIME than Freddie. Besides, Freddie runs workflows as a batch job and KNIME Server uses additional plugins. Freddie is a separate product from the analytics platform and should be used as such. 
 
 **TL;DR**: if you are a multimillion dollar company whose business success relies on the KNIME products you should certainly buy a KNIME Server because it is more stable, more feature packed and comes with support. 
 If you are an individual who needs a simple KNIME executor and cannot afford a full KNIME Server, please give Freddie a try. 
