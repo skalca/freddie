@@ -1,5 +1,5 @@
 # Freddie
-A lightweight, simple and crazy-idea server capable of executing workflows made with [KNIME Analyics Platform](https://www.knime.com/knime-analytics-platform).
+A lightweight, simple and crazy-idea server capable of executing workflows made with [KNIME Analytics Platform](https://www.knime.com/knime-analytics-platform).
 
 ## What/who is Freddie?
 
