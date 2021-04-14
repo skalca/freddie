@@ -34,12 +34,8 @@ Steps to install Freddie:
 * create folders: `mkdir -p /srv/freddie/{workspace,repo,repo/env,repo/env,config,logs,logs/jobs}`
 * make sure `wildfly` user has read/write access to `workspace` and `logs` folders, and read-only access to `repo` and `config` folders
 * install KNIME Analytics Platform to arbitrary folder (usually under `/opt/knime/knime_<version>`)
-* create configuration file `config/config.json` as per instructions below
+* create configuration file `config/config.json` as per instructions below (see *Creating configuration file*)
 * test with a Test repository by copying it to the `repo` folder
-
-## Documentation
-
-This section describes various inner workings of Freddie and how you can use different features it provides. 
 
 ### Creating configuration file
 
@@ -88,7 +84,85 @@ sched.max | Maximum number of scheduled instances running at the same time | 10
 
 ### Creating environments
 
-!! TODO:   env/default,  copy freddie_base_wf.knwf file,   name environment
+For each environment defined in the `config.json` file you have to create an appropriate and equally named folder in the `repo` folder. For example, if you created an environment `"name" : "knime_4.0.0"` with `"base_wf_dir" : "env/knime_4"` in the configuration file, you have to create a folder called `knime_4` in the `repo/env` folder. Note that the name of the environment does not need to match the folder name.
+
+For each environment you create, you **must** place the file `freddie_basewf.knwf` in the `repo/env/*env_name*` folder. This workflow is the basis for triggered instances. You **don't** have to use this file **if** you set `pool.init` and `pool.max` to `0` - eg. no triggered environment will be available.
+
+### Creating repositories
+
+***!! TODO:  how to create; repo.json file; how to make a simple workflow and export it...***
+
+## Usage (API documentation)
+
+Interaction with Freddie is via REST end-points. To see if Freddie is up and running open `GET <domain>/freddie/_admin/stats`. This is the main statistics page listing waiting and running instances. 
+
+There are 4 REST end-points:
+
+* `GET <domain>/freddie/_admin` - administration
+* `GET <domain>/freddie/_run` - execution of workflows
+* `GET <domain>/freddie/_repo` - repository configuration
+* `GET <domain>/freddie/_async` - viewing results of an asynchronously executed workflows
+
+Opening abowe URLs will print basic usage help in the browser.
+
+### `_admin` API
+
+Administration API allows one to view the current waiting and running KNIME instances, to view the server configuration and defined environments, and to shutdown currently waiting instances and to fire them up again.
+
+List of `_admin` end-points:
+
+URL | Description
+------------ | ------------
+`<domain>/freddie/_admin/stats` | Server name, version, start up time and running & waiting instances
+`<domain>/freddie/_admin/config` | Server configuration (read-only)
+`<domain>/freddie/_admin/envs` | Defined environments (read-only)
+`<domain>/freddie/_admin/init` | Initialize the pool of instances
+`<domain>/freddie/_admin/destroy` | Stop all waiting instances
+
+### `_repo` API
+
+Repository API allows one to view configuration of currently recognised repositories.
+
+List of `_repo` end-points:
+
+URL | Description | Example
+------------ | ------------ | ------------
+`<domain>/freddie/_repo/<repo_id>/settings` | Settings of a selected repository (read-only) | `GET <domain>/freddie/_repo/test_repo/settings`
+`<domain>/freddie/_repo/<repo_id>/settings/wfs` | List of defined workflows for a selected repository (read-only) | `GET <domain>/freddie/_repo/test_repo/settings/wfs`
+`<domain>/freddie/_repo/<repo_id>/settings/wfs/<wfs_id>` | Details of one selected workflow  (read-only) | `GET <domain>/freddie/_repo/test_repo/settings/wfs/echo[.knwf]`
+
+### `_run` API
+
+Route API allows one to run a specific workflow passing arbitrary JSON data. Depending on the `html` path parameter the workflow returns JSON or HTML page. Allowed HTTP methods are GET, PUT, POST and DELETE. Only POST and PUT allow passing of arbitrary JSON data.
+
+If `/_async` is suffixed after URL the workflow will be invoked in the background, where as a user gets returned data by using `_async` API (*see bellow*).
+
+Workflow can also return HTML page if you invoke `/freddie/_run/html/<repo_id/...` - note the **html** path parameter.
+
+List of `_run` end-points:
+
+URL | Description | Example
+------------ | ------------ | ------------
+`<domain>/freddie/_run/<repo_id>/<workflow_URL>` | Invoking workflow mapped to `<workflow_URL>`| `GET <domain>/freddie/_run/test_repo/echo`
+`<domain>/freddie/_run/<repo_id>/<workflow_URL>/_async` | Invoking workflow mapped to `<workflow_URL>` in **the background**| `DELETE <domain>/freddie/_run/test_repo/echo/_async`
+`<domain>/freddie/_run/html/<repo_id>/<workflow_URL>` | Invoking workflow mapped to `<workflow_URL>` and waiting for a HTML response | `GET <domain>/freddie/_run/html/test_repo/echo`
+
+
+### `_async` API
+
+Asynchronous API allows one to retrieve or delete response from previously asynchronously executed workflow.
+
+When a workflow is executed in the background the response contains an unique number `uuid` you use to periodicaly check if a response is available.
+
+
+List of `_async` end-points:
+
+URL | Description | Example
+------------ | ------------ | ------------
+`GET <domain>/freddie/_async/<uuid>` | Getting a response from asynchronously executed workflow with a unique number `uuid`| `GET <domain>/freddie/_async/1234-abcd-5678-fghi`
+`DELETE <domain>/freddie/_async/<uuid>` | Stops the running background instance from executing (eg. if response is not needed anymore) | `DELETE <domain>/freddie/_async/1234-abcd-5678-fghi`
+
+
 
 ## Known bugs
 
