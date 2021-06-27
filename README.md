@@ -168,7 +168,7 @@ URL | Description | Example
 
 *Unknown bugs are a nuisance. Known bugs are a feature!*
 
-* Sometimes when a KNWF file contains an empty folder not all files are extracted to disk. The consequence is that workflow execution fails with a log entry that a workflow folder could not be found. 
+* Sometimes when a KNWF file contains an empty folder not all files are extracted to disk. The consequence is that workflow execution fails with a log entry that a workflow folder could not be found. The solution is to open knwf file with 7-zip or similar and remove all empty folders.
 
 ## Future development
 
