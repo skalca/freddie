@@ -39,7 +39,7 @@ Steps to install Freddie:
 
 ### Creating configuration file
 
-Freddie expects to find a configuration file in the `config` folder named `config.json`. Its struture is as follows.
+Freddie expects to find the configuration file in the `config` folder named `config.json`. Its struture is as follows.
 
 ```javascript
 {
@@ -103,7 +103,7 @@ There are 4 REST end-points:
 * `GET <domain>/freddie/_repo` - repository configuration
 * `GET <domain>/freddie/_async` - viewing results of an asynchronously executed workflows
 
-Opening abowe URLs will print basic usage help in the browser.
+Opening above URLs will print basic usage help in the browser.
 
 ### `_admin` API
 
