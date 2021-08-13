@@ -44,7 +44,7 @@ Steps to install Freddie:
 
 ### Docker image
 
-Download KNIME Analytics Platform from official site and rename file to knime.tar.gz. Create config.json file or use one from example folder. Copy freddie.war file to the same folder. Create Dockerfile with the following content:
+Download KNIME Analytics Platform from official site and rename file to knime.tar.gz. Create config.json file or use one from example folder. Copy freddie.war and freddie_basewf.knwf file to the same folder. Create Dockerfile with the following content:
 
 ```
 FROM jboss/wildfly
