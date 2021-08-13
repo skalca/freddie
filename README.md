@@ -1,3 +1,6 @@
+
+**WARNING: I don't have energy nor time to properly set up this repository. So you are most welcome to fork this repository and to test and/or develop this project further!**
+
 # Freddie
 A lightweight, simple and crazy-idea server capable of executing workflows made with [KNIME Analytics Platform](https://www.knime.com/knime-analytics-platform).
 
@@ -236,7 +239,3 @@ URL | Description | Example
 * Security (login, workflow public/private,...)
 * Cluster execution (eg. running KNIME instances on more than one server) - don’t mix with workflow cluster execution (if you need parallel workflow node execution you need to buy a KNIME Server with [cluster execution](https://www.knime.com/knime-cluster-execution) capability - guys at KNIME can help you with that)
 * Eclipse/KNIME plugin for Freddie
-
-## Open-source, not open-contribution
-
-Freddie is open source but closed to code contributions. I am grateful for community involvement, bug reports & feature requests. 
