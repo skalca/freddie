@@ -27,7 +27,7 @@ If you are an individual who needs a simple KNIME executor and cannot afford a f
 
 ## How to install it?
 
-** I recommend you build a Docker image - see below! **
+**I recommend you build a Docker image - see below!**
 
 Freddie is in essence a Java servlet application. So it needs a Java application server to run. You can use any Java Servlet capable server but do note that Freddie was developed using Wildfly. I would recommend to use Wildfly to run Freddie before it is tested on other servers. 
 
