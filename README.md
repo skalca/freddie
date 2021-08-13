@@ -68,7 +68,7 @@ Element name | Description | Example value
 ------------ | ------------ | ------------
 name | Arbitrary name of an environment | default
 exec | Path to KNIME executable | /opt/knime/knime_4.1.3/knime
-base_wf_dir | Path to this environment's base directory under `repo` folder | env/default
+base_wf_dir | Path to this environment's base directory under `config` folder | env/default
 prefs | Path to 'preferences' file for KNIME Analytics Platform used on each run | null, empty or *path*
 
 #### Other elements
