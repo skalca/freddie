@@ -31,7 +31,7 @@ Also, for the time being I would recommend to use Linux based OS - maybe CentOS 
 Steps to install Freddie:
 * install [OpenJDK-8](https://adoptopenjdk.net/?variant=openjdk8&jvmVariant=hotspot)
 * install [Wildfly Application Server](https://www.wildfly.org/) per available documentation
-* create folders: `mkdir -p /srv/freddie/{workspace,repo,repo/env,repo/env,config,logs,logs/jobs}`
+* create folders: `mkdir -p /srv/freddie/{workspace,repo,config,config/env,config/env/default,logs,logs/jobs}`
 * make sure `wildfly` user has read/write access to `workspace` and `logs` folders, and read-only access to `repo` and `config` folders
 * install KNIME Analytics Platform to arbitrary folder (usually under `/opt/knime/knime_<version>`)
 * create configuration file `config/config.json` as per instructions below (see *Creating configuration file*)
@@ -84,13 +84,69 @@ sched.max | Maximum number of scheduled instances running at the same time | 10
 
 ### Creating environments
 
-For each environment defined in the `config.json` file you have to create an appropriate and equally named folder in the `repo` folder. For example, if you created an environment `"name" : "knime_4.0.0"` with `"base_wf_dir" : "env/knime_4"` in the configuration file, you have to create a folder called `knime_4` in the `repo/env` folder. Note that the name of the environment does not need to match the folder name.
+For each environment defined in the `config.json` file you have to create an appropriate and equally named folder in the `config/env` folder. For example, if you created an environment `"name" : "knime_4.0.0"` with `"base_wf_dir" : "env/knime_4"` in the configuration file, you have to create a folder called `knime_4` in the `config/env` folder. Note that the name of the environment does not need to match the folder name.
 
-For each environment you create, you **must** place the file `freddie_basewf.knwf` in the `repo/env/*env_name*` folder. This workflow is the basis for triggered instances. You **don't** have to use this file **if** you set `pool.init` and `pool.max` to `0` - eg. no triggered environment will be available.
+For each environment you create, you **must** place the file `freddie_basewf.knwf` in the `config/env/*env_name*` folder. This workflow is the basis for triggered instances. You **don't** have to use this file **if** you set `pool.init` and `pool.max` to `0` - eg. no triggered environment will be available.
 
 ### Creating repositories
 
-***!! TODO:  how to create; repo.json file; how to make a simple workflow and export it...***
+Repository is defined by a folder under `repo` folder. It should be read&write by user `wildfly`. Freddie discovers repositories on server (re)start by examining each folder under `repo` for a file called `repo.json`. This file specifies what workflows are available under each repository.
+
+**The best you can do it so examine example repository file (`example_repo.zip`) and just build from there..!**
+
+But for some basic guidance the repo.json file consists of these elements:
+
+* `name`- name of repository (can be different from folder name)
+* `descr` - description
+* `public` - is repository public or private? (currently not used)
+* `owner` - who is the owner of the repository (currently not used)
+* array `wf` - list of available workflows
+
+`wf` element is an array that lists which workflows are available to the user. Repository folder may contain multiple `knwf` files but only files specified in repo.json file can be used by the user/freddie.
+
+Each element under `wf` consists of these elements:
+
+* `id` : **name of knwf file with extension** - this is important to match, because this is the way that freddie finds actual files on disk
+* `name` - name of the workflow
+* `descr` - description of the workflow
+* `env` - name of the (KNIME) environment to use for workflow execution (used if not specified under child elements)
+* array `route` - list of URL endpoints to trigger execution of this workflow
+* array `sched` - list of execution intervals of this workflow
+
+Each element under `route` specifies URL endpoints that trigger execution of parent workflow. In other words you may define multiple different endpoints that run the same workflow. Because URL is passed to workflow you may use on workflow that GETs or POSTs data based on the envoked URL. How cool is that? :)
+
+OK, each element under `route` consists of these elements:
+
+* `id` - unique number (1, 2, 3, ...)
+* `url` - URL to invoke this workflow (can be regex!). Do not define full URL (eg. [http://server/freddie/_run/test_repo/runme](http://server/freddie/_run/test_repo/runme)) but rather only "runme".
+* `method` - HTTP method used (GET, POST, PUT, DELETE)
+* `env` - name of the (KNIME) environment to use for workflow execution (overrides the parent environment setting)
+
+So, for example if you define:
+
+```javascript
+//...
+"route" : [
+  "id" : 1,
+  "url" : "echo",
+  "method" : "GET",
+  "env" : "default"
+]
+//...
+```
+
+you may call this workflow with `GET http://server/freddie/_run/test_repo/echo` if the name of the repository is "test_repo".
+
+Scheduling workflows is easy too. Under `sched` list define objects with these elements:
+
+* `id` - unique number (1, 2, 3, ...)
+* `enabled` - true|false (should workflow be run according to the schedule?)
+* `at` - CRON string defining when to run the workflow (eg. `/1 * * * *` - every minute)
+* `prefs` - path to the preferences file used by the workflow
+* array `vars` - list of strings defining input variables (see batch execution for KNIME; `<var_name>,<value>,<type>`)
+* array `creds` - list of credentials (see batch execution for KNIME)
+* array `vmargs` - Java VM arguments (see batch execution for KNIME)
+* `env` - name of the (KNIME) environment to use for workflow execution (overrides the parent environment setting)
 
 ## Usage (API documentation)
 
