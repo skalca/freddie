@@ -27,6 +27,8 @@ If you are an individual who needs a simple KNIME executor and cannot afford a f
 
 ## How to install it?
 
+** I recommend you build a Docker image - see below! **
+
 Freddie is in essence a Java servlet application. So it needs a Java application server to run. You can use any Java Servlet capable server but do note that Freddie was developed using Wildfly. I would recommend to use Wildfly to run Freddie before it is tested on other servers. 
 
 Also, for the time being I would recommend to use Linux based OS - maybe CentOS or Ubuntu.
@@ -39,6 +41,39 @@ Steps to install Freddie:
 * install KNIME Analytics Platform to arbitrary folder (usually under `/opt/knime/knime_<version>`)
 * create configuration file `config/config.json` as per instructions below (see *Creating configuration file*)
 * test with a Test repository by copying it to the `repo` folder
+
+### Docker image
+
+Download KNIME Analytics Platform from official site and rename file to knime.tar.gz. Create config.json file or use one from example folder. Copy freddie.war file to the same folder. Create Dockerfile with the following content:
+
+```
+FROM jboss/wildfly
+
+ADD freddie.war /opt/jboss/wildfly/standalone/deployments/
+
+USER root
+
+RUN mkdir -p /srv/freddie/{config,logs,logs,repo,workspace} && \
+    mkdir -p /srv/freddie/config/env && \
+    mkdir -p /srv/freddie/config/env/default && \
+    mkdir -p /srv/freddie/logs/jobs && \
+    chown -R jboss:jboss /srv/freddie
+
+COPY config.json /srv/freddie/config/config.json
+COPY freddie_basewf.knwf /srv/freddie/config/env/default/freddie_basewf.knwf
+
+ADD knime.tar.gz /opt
+RUN mv /opt/knime_* /opt/knime
+
+WORKDIR /srv/freddie
+
+USER jboss
+
+RUN /opt/jboss/wildfly/bin/add-user.sh admin freddie --silent
+CMD ["/opt/jboss/wildfly/bin/standalone.sh", "-b", "0.0.0.0", "-bmanagement", "0.0.0.0"]
+```
+
+Build Docker image with `docker build -t freddie:v0.1 .` and run with `docker run -it -v /tmp/example/repo:/srv/freddie/repo -p 8080:8080 -p 9990:9990 freddie:v0.1`. Put your repositories into `/tmp/example/repo` folder and freddie will discover every repository that has repo.json file in it.
 
 ### Creating configuration file
 
